@@ -1,0 +1,44 @@
+name: GitHub Actions workflow for the nrju/PowerShell.Profile repository
+
+on:
+  workflow_dispatch:
+
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  main:
+    name: Main job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Test *.psd1 files
+        shell: pwsh
+        run: |
+          Get-ChildItem ./src -Recurse -File -Filter *.psd1 |
+            Test-ModuleManifest
+
+      - name: Register GitHub PowerShell repository
+        if: github.event_name == 'release'
+        shell: pwsh
+        run: |
+          Register-PSResourceRepository GitHub `
+            -Uri https://nuget.pkg.github.com/$env:GITHUB_REPOSITORY_OWNER/index.json `
+            -Trusted
+
+      - name: Publish PowerShell modules
+        if: github.event_name == 'release'
+        shell: pwsh
+        run: |
+          Get-ChildItem ./src | ForEach-Object {
+            Publish-PSResource $_ -Repository GitHub -ApiKey $env:APIKEY
+          }
+        env:
+          APIKEY: ${{secrets.GITHUB_TOKEN}}
