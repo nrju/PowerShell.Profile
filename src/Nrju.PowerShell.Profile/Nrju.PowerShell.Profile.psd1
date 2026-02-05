@@ -30,7 +30,7 @@ CompanyName = 'Rodion Novoselov'
 Copyright = '(c) Rodion Novoselov, 2025'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'Import this module in your PowerShell profile to customize your PowerShell experience with a personalized prompt, Git and GitHub integration, enhanced command line editing, and more.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''
